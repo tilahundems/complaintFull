@@ -1,0 +1,66 @@
+# # Stage 1: Build
+# FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+# WORKDIR /src
+
+# COPY CompliantSystem.sln ./
+# COPY src/CompliantSystem.Application/*.csproj src/CompliantSystem.Application/
+# COPY src/CompliantSystem.Domain/*.csproj  src/CompliantSystem.Domain/
+# COPY src/CompliantSystem.Infrastructure/*.csproj  src/CompliantSystem.Infrastructure/
+# COPY src/CompliantSystem.WebApi/*.csproj   src/CompliantSystem.WebApi/
+
+# # Restore dependencies
+# RUN dotnet restore CompliantSystem.sln
+
+# # Copy the rest of the source code
+# COPY . .
+
+# # Publish Web API
+# RUN dotnet publish src/CompliantSystem.WebApi/CompliantSystem.WebApi.csproj -c Release -o /app/publish
+
+# # Stage 2: Runtime
+# FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+# WORKDIR /app
+# COPY --from=build /app/publish .
+
+# # Configure app to listen on port 80
+# ENV ASPNETCORE_URLS=http://+:80
+# EXPOSE 80
+
+# ENTRYPOINT ["dotnet", "CompliantSystem.WebApi.dll"]
+
+
+
+# Kubo  Version 
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build  
+
+WORKDIR /src
+
+COPY src/CompliantSystem.Application/*.csproj src/CompliantSystem.Application/ 
+
+COPY src/CompliantSystem.Domain/*.csproj  src/CompliantSystem.Domain/
+
+COPY src/CompliantSystem.Infrastructure/*.csproj  src/CompliantSystem.Infrastructure/
+
+COPY src/CompliantSystem.WebApi/*.csproj   src/CompliantSystem.WebApi/
+
+COPY CompliantSystem.sln ./
+# Restore dependencies
+RUN dotnet restore CompliantSystem.sln
+
+# Copy the rest of the source code
+COPY . .
+
+# Publish Web API
+RUN dotnet publish src/CompliantSystem.WebApi/CompliantSystem.WebApi.csproj -c Release -o /app/publish
+
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+
+# Configure app to listen on port 80
+ENV ASPNETCORE_URLS=http://+:80
+EXPOSE 80
+
+ENTRYPOINT ["dotnet", "CompliantSystem.WebApi.dll"]
