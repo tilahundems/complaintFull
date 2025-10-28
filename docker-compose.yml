@@ -1,3 +1,42 @@
+# version: "3.9"
+
+# services:
+#   compliant-api:
+#     build:
+#       context: ./complaintbackend
+#       dockerfile: dockerfile
+#     container_name: compliant-api
+#     ports:
+#       - "8080:80"
+#     environment:
+#       - ASPNETCORE_ENVIRONMENT=Development
+#       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=CompliantDb;Username=postgres;Password=Postgres@1888
+#     depends_on:
+#       - db
+#     networks:
+#       - compliant-network
+
+#   db:
+#     image: postgres:16
+#     container_name: compliant-db
+#     restart: always
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: Postgres@1888
+#       POSTGRES_DB: CompliantDb
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - pg_data:/var/lib/postgresql/data
+#     networks:
+#       - compliant-network
+
+# networks:
+#   compliant-network:
+
+# volumes:
+#   pg_data:
+
 version: "3.9"
 
 services:
@@ -13,6 +52,18 @@ services:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=CompliantDb;Username=postgres;Password=Postgres@1888
     depends_on:
       - db
+    networks:
+      - compliant-network
+
+  compliant-frontend:
+    build:
+      context: ./complaintfrontend
+      dockerfile: Dockerfile
+    container_name: compliant-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - compliant-api
     networks:
       - compliant-network
 
